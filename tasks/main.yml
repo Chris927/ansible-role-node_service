@@ -1,0 +1,17 @@
+- name: create user
+  user: name={{ item.user }} generate_ssh_key=yes ssh_key_bits=2048 shell=/bin/bash
+  with_items: config
+- name: ensure restart script is available
+  template: src=restart.sh dest=/home/{{ item.name }}/restart.sh mode=0755
+  with_items: config
+- name: ensure sudoers.d exists
+  file: dest=/etc/sudoers.d state=directory mode=0750
+- name: ensure user can sudo, limited to restart
+  template: src=sudoers dest=/etc/sudoers.d/{{ item.name }} mode=0440
+  with_items: config
+- name: ensure upstart config is there
+  template: src=upstart.conf dest=/etc/init/{{ item.name }}.conf
+  with_items: config
+- name: ensure logs directory exists
+  file: path=/home/{{ item.user }}/logs state=directory owner={{ item.user }} mode=0755
+  with_items: config

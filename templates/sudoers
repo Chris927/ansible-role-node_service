@@ -1,0 +1,1 @@
+{{ item.user }} ALL = (root) NOPASSWD: /usr/sbin/service {{ item.name }} stop, /usr/sbin/service {{ item.name }} start
